@@ -33,6 +33,7 @@ def get_delivery_channel(client):
         return response
     return None
 
+
 def make_delivery_channel_bucket(region, account, bucket_name):
     s3 = boto3.resource('s3', region_name=region, **account.credentials)
     bucket = s3.Bucket(bucket_name)
@@ -98,10 +99,6 @@ def make_delivery_channel_topic(region, account, topic_name):
     return topic
 
 
-'''
-            "PolicyName": "AWSConfigServiceRolePolicy",
-            "Arn": "arn:aws:iam::aws:policy/aws-service-role/AWSConfigServiceRolePolicy",
-'''
 def make_config_service_role(region, account, policy_arn):
     client = boto3.client('iam', region_name=region, **account.credentials)
     iam = boto3.resource('iam', region_name=region, **account.credentials)
@@ -127,12 +124,35 @@ def make_config_service_role(region, account, policy_arn):
         #]
     )
     role = iam.Role('AWSServiceRoleForConfig')
-    #role.load()
     role.attach_policy(PolicyArn=policy_arn)
     return role
 
 
-
+def enable_config(region, account, kwargs):
+    bucket = make_delivery_channel_bucket(region, account, kwargs['bucket_name'])
+    topic = make_delivery_channel_topic(region, account, kwargs['topic_name'])
+    role = make_config_service_role(region, account, kwargs['policy_arn'])
+    config_client = setup_config_client(region, account)
+    recorder_attributes = {
+        'name': kwargs['recorder_name]',
+        'roleARN': role.arn,
+        'recordingGroup': {
+            'allSupported': True,
+            'includeGlobalResourceTypes': True,
+            'resourceTypes': [],
+        }
+    }
+    recorder = create_configuration_recorder(config_client, recorder_attributes)
+    channel_attributes = {
+        'name': kwargs['channel_name'],
+        's3BucketName': bucket.name,
+        's3KeyPrefix': kwargs['object_prefix'],
+        'snsTopicARN': topic.arn,
+        'configSnapshotDeliveryProperties': {
+            'deliveryFrequency': kwargs['frequency'],
+        }
+    }
+    delivery_channel = create_delivery_channel(config_client, channel_attributes)
 
 
 def main():

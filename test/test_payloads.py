@@ -110,7 +110,7 @@ CHANNEL_ATTRIBUTES = {
 @mock_sts
 @mock_organizations
 @mock_s3
-def test_setup_config_client():
+def test_make_delivery_channel_bucket():
     org_id, root_id = build_mock_org(SIMPLE_ORG_SPEC)
     crawler = setup_crawler(ORG_ACCESS_ROLE)
     account = crawler.accounts[0]
@@ -130,7 +130,7 @@ def test_setup_config_client():
 @mock_sts
 @mock_organizations
 @mock_sns
-def test_setup_config_client():
+def test_make_delivery_channel_topic():
     org_id, root_id = build_mock_org(SIMPLE_ORG_SPEC)
     crawler = setup_crawler(ORG_ACCESS_ROLE)
     account = crawler.accounts[0]
@@ -147,12 +147,13 @@ def test_setup_config_client():
 @mock_sts
 @mock_organizations
 @mock_iam
-def test_setup_config_client():
+def test_make_config_service_role():
     org_id, root_id = build_mock_org(SIMPLE_ORG_SPEC)
     crawler = setup_crawler(ORG_ACCESS_ROLE)
     account = crawler.accounts[0]
     region = crawler.regions[0]
     client = boto3.client('iam', region_name=region, **account.credentials)
+    # create mock policy for role
     response = client.create_policy(
         PolicyName='AWSConfigServiceRolePolicy',
         Path='/aws-service-role/',
@@ -169,15 +170,23 @@ def test_setup_config_client():
         Description='mock policy for testing test_setup_config_client()',
     )
     role = payloads.make_config_service_role(region, account, response['Policy']['Arn'])
-    print(role)
-    #print(dir(role))
-    print(role.name)
-    print(role.path)
-    #print(next(role.attached_policies.all()))
-    print(role.assume_role_policy_document)
     assert isinstance(role, object)
-    #assert topic.arn.rpartition(':')[2] == 'config_test'
-    #assert isinstance(topic.attributes['Policy'], str)
-    #sns_policy_document = json.loads(topic.attributes['Policy'])
-    #assert sns_policy_document['Statement'][0]['Sid'] == 'AWSConfigSNSPolicy'
-    assert False   #assert False
+    assert role.name == 'AWSServiceRoleForConfig'
+    assert role.path == '/aws-service-role/config.amazonaws.com/'
+    assert list(role.attached_policies.all())[0].arn == response['Policy']['Arn']
+    assert role.assume_role_policy_document['Statement'][0]['Action'][0] == 'sts:AssumeRole'
+    assert role.assume_role_policy_document['Statement'][0]['Principal']['Service'][0] == 'config.amazonaws.com'
+
+
+@mock_sts
+@mock_organizations
+@mock_s3
+@mock_sns
+@mock_iam
+@mock_config
+def test_enable_config():
+    org_id, root_id = build_mock_org(SIMPLE_ORG_SPEC)
+    crawler = setup_crawler(ORG_ACCESS_ROLE)
+    account = crawler.accounts[0]
+    region = crawler.regions[0]
+    # untested yet
