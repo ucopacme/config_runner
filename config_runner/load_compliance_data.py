@@ -2,6 +2,7 @@
 
 import io
 import sys
+import datetime
 
 import yaml
 import json
@@ -40,6 +41,14 @@ def get_resource_count(item):
     return None
 
 
+def is_in_scope(spec, rule_name):
+    return rule_name in spec.get('config_rules')
+
+
+def timestamp():
+    return datetime.datetime.utcnow().isoformat()
+
+
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('--master-role', '-r',
     required=True,
@@ -48,6 +57,10 @@ def get_resource_count(item):
 @click.option('--aggregation-account', '-a',
     required=True,
     help='Name or Id of config rule aggregation account.',
+)
+@click.option('--reporting-account',
+    default='',
+    help='Name or Id of account where s3 bucket lives. defaults to "aggregation-account"',
 )
 @click.option('--bucket-name', '-b',
     default='compliance_data',
@@ -59,12 +72,18 @@ def get_resource_count(item):
     type=click.File('r'),
     help='Path to file containing config rule names.'
 )
-def main(master_role, aggregation_account, bucket_name, spec_file):
-    #print(master_role, aggregation_account, bucket_name, spec_file)
+def main(master_role, aggregation_account, reporting_account, bucket_name, spec_file):
+    if not reporting_account:
+        reporting_account = aggregation_account
+    print(master_role, aggregation_account, reporting_account, bucket_name, spec_file)
+
+    # parse spec file
+    spec = yaml.safe_load(spec_file.read())
+    #print(yamlfmt(spec['config_rules']))
+    #print()
+    #print(yamlfmt([truncate_sechub_rule_name(rule_name) for rule_name in spec['config_rules']]))
 
     # get account names and alias using orgcrawler
-    spec = yaml.safe_load(spec_file.read())
-    print(yamlfmt(spec['config_rules']))
     crawler = setup_crawler(
         master_role,
         regions=DEFAULT_REGION,
@@ -87,8 +106,7 @@ def main(master_role, aggregation_account, bucket_name, spec_file):
         (agg['ConfigurationAggregatorName'] for agg in response['ConfigurationAggregators']),
         None,
     )
-    print(aggrigator_name)
-    print()
+    #print(aggrigator_name)
 
     # get compliance data
     if aggrigator_name is not None:
@@ -97,7 +115,7 @@ def main(master_role, aggregation_account, bucket_name, spec_file):
             client.describe_aggregate_compliance_by_config_rules,
             ConfigurationAggregatorName=aggrigator_name,
         )
-        print(next(compliance_generator))
+        #print(next(compliance_generator))
 
     else:
         sys.exit('could not determine ConfigurationAggregatorName')
@@ -106,25 +124,42 @@ def main(master_role, aggregation_account, bucket_name, spec_file):
     text_stream = io.StringIO()
 
     for item in compliance_generator:
-        compliance_data = dict(
-            ConfigRuleName=truncate_sechub_rule_name(item['ConfigRuleName']),
-            ComplianceType=item['Compliance']['ComplianceType'],
-            ComplianceContributorCount=get_resource_count(item),
-            AccountId=item['AccountId'],
-            AwsRegion=item['AwsRegion'],
-            AccountName=crawler.org.get_account_name_by_id(item['AccountId']),
-        )
-
-        #if 'config_rules' in spec and compliance_data['ConfigRuleName'] not in spec['config_rules']:
-        #    print(compliance_data['ConfigRuleName'])
-        #    continue
-
-        text_stream.write(json.dumps(compliance_data) + '\n')
-    print(text_stream.getvalue())
-
+        rule_name = truncate_sechub_rule_name(item['ConfigRuleName'])
+        if is_in_scope(spec, rule_name):
+            compliance_data = dict(
+                ConfigRuleName=rule_name,
+                ComplianceType=item['Compliance']['ComplianceType'],
+                ComplianceContributorCount=get_resource_count(item),
+                AccountId=item['AccountId'],
+                AwsRegion=item['AwsRegion'],
+                AccountName=crawler.org.get_account_name_by_id(item['AccountId']),
+            )
+            text_stream.write(json.dumps(compliance_data) + '\n')
+        #else:
+        #    print('out of scope: ', compliance_data['AccountName'], rule_name)
+    #print(text_stream.getvalue())
 
     # upload to s3
+    obj_path = 'aggregate_compliance_by_config_rules/{}/compliance_data.json'.format(timestamp()) 
+    #print(obj_path)
+    account = crawler.org.get_account(reporting_account)
+    bucket_name = bucket_name + '-' + account.id
+    print(bucket_name)
+    s3_client = boto3.client('s3', region_name=DEFAULT_REGION, **account.credentials)
+    try:
+        s3_client.create_bucket(
+            ACL = 'private',
+            Bucket = bucket_name,
+            CreateBucketConfiguration = {'LocationConstraint':DEFAULT_REGION}
+        )
+    except s3_client.exceptions.BucketAlreadyOwnedByYou as e:
+        pass
 
+    s3_client.put_object(
+        Bucket = bucket_name,
+        Key = obj_path,
+        Body = text_stream.getvalue(),
+    )
 
 if __name__ == '__main__':
     main()
