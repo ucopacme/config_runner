@@ -1,0 +1,62 @@
+(python3.7) agould@horus:~> aws configservice describe-configuration-aggregators
+{
+    "ConfigurationAggregators": [
+        {
+            "ConfigurationAggregatorName": "awslabs-compliance-engine",
+            "ConfigurationAggregatorArn": "arn:aws:config:us-west-2:921671357694:config-aggregator/config-aggregator-byxuomnh",
+            "AccountAggregationSources": [
+                {
+                    "AccountIds": [
+                        "217985836260",
+                        "071826132890",
+			cut
+                    ],
+                    "AllAwsRegions": false,
+                    "AwsRegions": [
+                        "us-east-1",
+                        "us-west-2"
+                    ]
+                }
+            ],
+            "CreationTime": 1565388133.36,
+            "LastUpdatedTime": 1568830862.545
+        }
+    ]
+}
+
+
+(python3.7) agould@horus:~> aws configservice get-aggregate-config-rule-compliance-summary --configuration-aggregator-name awslabs-compliance-engine
+{
+    "AggregateComplianceCounts": [
+        {
+            "ComplianceSummary": {
+                "CompliantResourceCount": {
+                    "CappedCount": 780,
+                    "CapExceeded": false
+                },
+                "NonCompliantResourceCount": {
+                    "CappedCount": 701,
+                    "CapExceeded": false
+                },
+                "ComplianceSummaryTimestamp": 1578347238.16
+            }
+        }
+    ]
+}
+
+(python3.7) agould@horus:~> aws configservice list-aggregate-discovered-resources --configuration-aggregator-name awslabs-compliance-engine --resource-type AWS::S3::Bucket
+        cut
+        {
+            "SourceAccountId": "978449392706",
+            "SourceRegion": "us-west-2",
+            "ResourceId": "stackset-config-seg-master-us-west-2-configbucket-6b899sjqg19l",
+            "ResourceType": "AWS::S3::Bucket",
+            "ResourceName": "stackset-config-seg-master-us-west-2-configbucket-6b899sjqg19l"
+        }
+    ]
+}
+
+
+aws configservice list-aggregate-discovered-resources --configuration-aggregator-name awslabs-compliance-engine --resource-type AWS::S3::Bucket | grep ResourceName | wc -l
+823
+

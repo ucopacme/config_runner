@@ -1,0 +1,29 @@
+config_rules:
+- securityhub-access-keys-rotated-ia3fjk
+- securityhub-cloud-trail-cloud-watch-logs-enabled-3dneej
+- securityhub-cloud-trail-encryption-enabled-6nr9ok
+- securityhub-cloud-trail-log-file-validation-enabled-xbb5e9
+- securityhub-cmk-backing-key-rotation-enabled-e6177l
+- securityhub-iam-password-policy-ensure-expires-qj36mx
+- securityhub-iam-password-policy-lowercase-letter-check-hp659
+- securityhub-iam-password-policy-minimum-length-check-z0z3dh
+- securityhub-iam-password-policy-number-check-hoc9nh
+- securityhub-iam-password-policy-prevent-reuse-check-r9x47
+- securityhub-iam-password-policy-symbol-check-99261j
+- securityhub-iam-password-policy-uppercase-letter-check-c2ghae
+- securityhub-iam-policy-no-statements-with-admin-access-mbrg5
+- securityhub-iam-root-access-key-check-s4lor
+- securityhub-iam-user-no-policies-check-lmxkld
+- securityhub-iam-user-unused-credentials-check-iap6xe
+- securityhub-mfa-enabled-for-iam-console-access-ay0119
+- securityhub-multi-region-cloud-trail-enabled-rde2c
+- securityhub-restricted-rdp-g9e0r
+- securityhub-restricted-ssh-5nfymj
+- securityhub-root-account-hardware-mfa-enabled-0iruws
+- securityhub-root-account-mfa-enabled-k911n
+- securityhub-s3-bucket-logging-enabled-h7mmfr
+- securityhub-s3-bucket-public-read-prohibited-4068z
+- securityhub-s3-bucket-public-write-prohibited-bq8j2
+- securityhub-vpc-default-security-group-closed-8mcozc
+- securityhub-vpc-flow-logs-enabled-ol1xe3
+

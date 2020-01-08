@@ -1,0 +1,257 @@
+Things I want to be able to report
+
+for each account/region:
+
+- list all rules by ConfigRuleName 
+- list all rules with all resources fully compliant by ConfigRuleName 
+- list all rules with any non-compliant resources by ConfigRuleName 
+- list all rules with any non-compliant resources by ConfigRuleName and non-compliant resource count
+#- list all rules with any non-compliant resources by ConfigRuleName and non-compliant resource arn
+- list total count of all non-compliant config rules
+- list total count of all non-compliant resources
+
+for each config rule:
+
+- list all accounts/regions where rule is deployed
+- list all accounts/regions where rule is fully compliant
+- list all accounts/regions where rule is not fully compliant
+- for each account/region:
+
+  - list count of all compliant resources
+  - list count of all non-compliant resources
+#  - list arn of all compliant resources
+  - list arn of all non-compliant resources
+ 
+- for all accounts/regions:
+
+  - list total count of all non-compliant resources
+  - list total count of all non-compliant resources
+'''
+
+
+
+
+describe_config_rule_evaluation_status
+            'ConfigRuleName': 'string',
+            'LastSuccessfulEvaluationTime': datetime(2015, 1, 1),
+
+
+{
+    'ConfigRulesEvaluationStatus': [
+        {
+            'ConfigRuleName': 'string',
+            'ConfigRuleArn': 'string',
+            'ConfigRuleId': 'string',
+            'LastSuccessfulInvocationTime': datetime(2015, 1, 1),
+            'LastFailedInvocationTime': datetime(2015, 1, 1),
+            'LastSuccessfulEvaluationTime': datetime(2015, 1, 1),
+            'LastFailedEvaluationTime': datetime(2015, 1, 1),
+            'FirstActivatedTime': datetime(2015, 1, 1),
+            'LastErrorCode': 'string',
+            'LastErrorMessage': 'string',
+            'FirstEvaluationStarted': True|False
+        },
+    ],
+    'NextToken': 'string'
+}
+
+
+
+
+
+describe_config_rules::
+'ConfigRuleState' == 'ACTIVE'
+
+            'ConfigRuleName': 'string',
+            'ConfigRuleArn': 'string',
+            'ConfigRuleId': 'string',
+                'ComplianceResourceTypes': [
+
+
+{
+    'ConfigRules': [
+        {
+            'ConfigRuleName': 'string',
+            'ConfigRuleArn': 'string',
+            'ConfigRuleId': 'string',
+            'Description': 'string',
+            'Scope': {
+                'ComplianceResourceTypes': [
+                    'string',
+                ],
+                'TagKey': 'string',
+                'TagValue': 'string',
+                'ComplianceResourceId': 'string'
+            },
+            'Source': {
+                'Owner': 'CUSTOM_LAMBDA'|'AWS',
+                'SourceIdentifier': 'string',
+                'SourceDetails': [
+                    {
+                        'EventSource': 'aws.config',
+                        'MessageType': 'ConfigurationItemChangeNotification'|'ConfigurationSnapshotDeliveryCompleted'|'ScheduledNotification'|'OversizedConfigurationItemChangeNotification',
+                        'MaximumExecutionFrequency': 'One_Hour'|'Three_Hours'|'Six_Hours'|'Twelve_Hours'|'TwentyFour_Hours'
+                    },
+                ]
+            },
+            'InputParameters': 'string',
+            'MaximumExecutionFrequency': 'One_Hour'|'Three_Hours'|'Six_Hours'|'Twelve_Hours'|'TwentyFour_Hours',
+            'ConfigRuleState': 'ACTIVE'|'DELETING'|'DELETING_RESULTS'|'EVALUATING',
+            'CreatedBy': 'string'
+        },
+    ],
+    'NextToken': 'string'
+}
+
+
+
+
+
+describe_compliance_by_config_rule
+# if 'ComplianceType': 'COMPLIANT', do I see a 'ComplianceContributorCount': { 'CappedCount': 123,} ???
+
+            'ConfigRuleName': 'string',
+                'ComplianceType': 'COMPLIANT'|'NON_COMPLIANT'|'NOT_APPLICABLE'|'INSUFFICIENT_DATA',
+                'ComplianceContributorCount': { 'CappedCount': 123,}
+
+{
+    'ComplianceByConfigRules': [
+        {
+            'ConfigRuleName': 'string',
+            'Compliance': {
+                'ComplianceType': 'COMPLIANT'|'NON_COMPLIANT'|'NOT_APPLICABLE'|'INSUFFICIENT_DATA',
+                'ComplianceContributorCount': {
+                    'CappedCount': 123,
+                    'CapExceeded': True|False
+                }
+            }
+        },
+    ],
+    'NextToken': 'string'
+}
+
+-----
+
+
+            'ConfigRuleName': 'string',
+            'ConfigRuleArn': 'string',
+            'ConfigRuleId': 'string',
+            'LastSuccessfulEvaluationTime': datetime(2015, 1, 1),
+                'ComplianceResourceTypes': [
+                    (or)
+                'ComplianceResourceId': 'string'
+                'ComplianceType': 'COMPLIANT'|'NON_COMPLIANT'|'NOT_APPLICABLE'|'INSUFFICIENT_DATA',
+                'ComplianceContributorCount': { 'CappedCount': 123,} 		# non-compliant resource count
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+get_compliance_details_by_config_rule
+ConfigRuleName (string) --
+[REQUIRED]
+
+{
+    'EvaluationResults': [
+        {
+            'EvaluationResultIdentifier': {
+                'EvaluationResultQualifier': {
+                    'ConfigRuleName': 'string',
+                    'ResourceType': 'string',
+                    'ResourceId': 'string'
+                },
+                'OrderingTimestamp': datetime(2015, 1, 1)
+            },
+            'ComplianceType': 'COMPLIANT'|'NON_COMPLIANT'|'NOT_APPLICABLE'|'INSUFFICIENT_DATA',
+            'ResultRecordedTime': datetime(2015, 1, 1),
+            'ConfigRuleInvokedTime': datetime(2015, 1, 1),
+            'Annotation': 'string',
+            'ResultToken': 'string'
+        },
+    ],
+    'NextToken': 'string'
+}
+
+
+
+-----
+
+describe_configuration_aggregators
+
+{
+    'ConfigurationAggregators': [
+        {
+            'ConfigurationAggregatorName': 'string',
+            'ConfigurationAggregatorArn': 'string',
+            'AccountAggregationSources': [
+                {
+                    'AccountIds': [
+                        'string',
+                    ],
+                    'AllAwsRegions': True|False,
+                    'AwsRegions': [
+                        'string',
+                    ]
+                },
+            ],
+            'OrganizationAggregationSource': {
+                'RoleArn': 'string',
+                'AwsRegions': [
+                    'string',
+                ],
+                'AllAwsRegions': True|False
+            },
+            'CreationTime': datetime(2015, 1, 1),
+            'LastUpdatedTime': datetime(2015, 1, 1)
+        },
+    ],
+    'NextToken': 'string'
+}
+
+
+
+
+
+describe_aggregate_compliance_by_config_rules
+ConfigurationAggregatorName (string) --
+[REQUIRED]
+
+{
+    'AggregateComplianceByConfigRules': [
+        {
+            'ConfigRuleName': 'string',
+            'Compliance': {
+                'ComplianceType': 'COMPLIANT'|'NON_COMPLIANT'|'NOT_APPLICABLE'|'INSUFFICIENT_DATA',
+                'ComplianceContributorCount': {
+                    'CappedCount': 123,
+                    'CapExceeded': True|False
+                }
+            },
+            'AccountId': 'string',
+            'AwsRegion': 'string'
+        },
+    ],
+    'NextToken': 'string'
+}

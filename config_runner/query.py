@@ -1,5 +1,6 @@
 import json
 import boto3
+import botocore
 import orgcrawler
 from orgcrawler.utils import jsonfmt, yamlfmt
 from orgcrawler.cli.utils import (
@@ -16,10 +17,10 @@ def config_describe_rules(region, account):     # pragma: no cover
     '''
     usage example:
 
-      orgcrawler -r OrganizationAccountAccessRole orgcrawler.payloads.config_describe_rules
+      orgcrawler -r OrganizationAccountAccessRole orgcrawler.payloads.config.describe_rules
 
       orgcrawler -r OrganizationAccountAccessRole \
-              --regions us-west-2 orgcrawler.payloads.config_describe_rules | jq -r '
+              --regions us-west-2 orgcrawler.payloads.config.describe_rules | jq -r '
               .[] | .Account,
               (.Regions[] | ."us-west-2".ConfigRules[].ConfigRuleName),
               ""' | tee config_rules_in_accounts.us-west-2
@@ -43,7 +44,8 @@ def compliance_by_rule(region, account, rule_name):
 
     '''
 
-    client = boto3.client('config', region_name=region, **account.credentials)
+    botoConfig = botocore.client.Config(connect_timeout=2, read_timeout=10, retries={"max_attempts": 2})
+    client = boto3.client('config', config=botoConfig, region_name=region, **account.credentials)
     rules = config_describe_rules(region, account)['ConfigRules']
     # returns the first matching name
     full_rule_name = next((r['ConfigRuleName'] for r in rules if r['ConfigRuleName'].startswith(rule_name)), None)
