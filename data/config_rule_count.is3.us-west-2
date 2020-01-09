@@ -1,0 +1,43 @@
+> orgcrawler -r awsauth/OrgAdmin --regions us-west-2 orgcrawler.untested_payload.config.count_rules is3 | jq -r '.[] | .Regions[].Output.Count, .Account' > config_rule_count.is3.us-west-2
+
+
+12 Auth
+12 OrgMaster
+12 UCOP SharePoint
+3  ait-poc
+13 ait-training
+19 big-build
+19 big-data
+19 big-dev
+14 big-land
+19 big-prod
+19 big-test
+20 bigri-prod
+15 eas-dev
+18 eas-prod
+19 eat-poc
+20 fdw-dev
+8  finapps-poc
+17 iso-poc
+0  iso-prod
+17 ldc
+12 net-prod
+18 ppers-orig
+20 ppers-poc
+18 ppersdev
+13 ppersprod
+15 seg-peoplesoftpoc
+20 segConf
+12 segLog
+19 stm-dev
+18 syseng-poc
+12 ucop-its
+17 ucop-itssandbox-eas
+19 ucop-setdev
+19 ucpath-build
+20 ucpath-dr
+20 ucpath-pmo
+17 ucpath-prod
+18 ucpathops-poc
+20 was-build
+20 was-poc

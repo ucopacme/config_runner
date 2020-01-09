@@ -1,0 +1,78 @@
+select * from aggregate_compliance_data where AccountName like 'eas-prod';
+
+
+# 2 useful queries:
+SELECT configrulename, accountname, compliancecontributorcount as count from aggregate_compliance_data where compliancetype like 'NON_COMPLIANT' order by configrulename, accountname;
+SELECT accountname, configrulename, compliancecontributorcount as count from aggregate_compliance_data where compliancetype like 'NON_COMPLIANT' order by accountname, configrulename;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://sysadmins.co.za/using-the-aws-cli-tools-to-interact-with-amazons-athena-service/
+https://github.com/guardian/athena-cli
+
+> pip install athena-cli
+Installing collected packages: tabulate, pyperclip, cmd2, athena-cli
+Successfully installed athena-cli-0.1.10 cmd2-0.9.22 pyperclip-1.7.0 tabulate-0.8.6
+
+config_runner> athena
+athena> 
+
+athena-cli fails to properly use by aws env vars.  cannot assume role
+
+
+----
+
+(python3.7) agould@horus:~/git-repos/github/ucopacme/config_runner> pip install athenacli
+
+Installing collected packages: tenacity, PyAthena, sqlparse, configobj, prompt-toolkit, terminaltables, cli-helpers, athenacli
+  Found existing installation: prompt-toolkit 1.0.14
+    Uninstalling prompt-toolkit-1.0.14:
+      Successfully uninstalled prompt-toolkit-1.0.14
+Successfully installed PyAthena-1.9.0 athenacli-1.1.2 cli-helpers-1.2.1 configobj-5.0.6 prompt-toolkit-2.0.10 sqlparse-0.3.0 tenacity-6.0.0 terminaltables-3.1.0
+
+
+initial setup requires me to set an s3 outputs bucket:
+
+(python3.7) agould@horus:~/git-repos/github/ucopacme/config_runner> aws-assume-role iso-prod-OrgAdmin
+(python3.7) agould@horus:~/git-repos/github/ucopacme/config_runner> s3mb ashley-athena-outputs
+make_bucket: ashley-athena-outputs
+
+> grep s3_staging_dir ~/.athenacli/athenaclirc 
+s3_staging_dir = 's3://ashley-athena-outputs'
+
+
+(python3.7) agould@horus:~/git-repos/github/ucopacme/config_runner> athenacli is3_compliance_data
+us-west-2:is3_compliance_data> show tables;                                                                                                                                             
++---------------------------+
+| tab_name                  |
++---------------------------+
+| aggregate_compliance_data |
++---------------------------+
+1 row in set
+Time: 0.854s
+us-west-2:is3_compliance_data>  
+
+
