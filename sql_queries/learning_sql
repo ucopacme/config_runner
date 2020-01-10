@@ -29,7 +29,7 @@ SELECT accountname, configrulename, compliancecontributorcount as count from agg
 
 
 
-
+https://beginner-sql-tutorial.com/sql-select-statement.htm
 https://sysadmins.co.za/using-the-aws-cli-tools-to-interact-with-amazons-athena-service/
 https://github.com/guardian/athena-cli
 
@@ -76,3 +76,5 @@ Time: 0.854s
 us-west-2:is3_compliance_data>  
 
 
+
+Amazon S3/cloudtraillogs.isoprod.921671357694.ucop.edu/AWSLogs/183454483292/CloudTrail/ap-northeast-2/2017/11/06

@@ -41,3 +41,95 @@
 18 ucpathops-poc
 20 was-build
 20 was-poc
+
+
+> orgcrawler -r awsauth/OrgAdmin --regions us-west-2 orgcrawler.untested_payload.config.count_rules is3 | jq -r '.[] | .Regions[].Output.Count, .Account' > config_rule_count.is3.us-west-2.1
+
+12 Auth               12 Auth
+12 OrgMaster          12 OrgMaster
+12 UCOP SharePoint    12 UCOP SharePoint
+2 ait-poc             2 ait-poc
+18 ait-training       18 ait-training
+20 big-build          20 big-build
+20 big-data           20 big-data
+19 big-dev            19 big-dev
+20 big-land           20 big-land
+20 big-prod           20 big-prod
+19 big-test           19 big-test
+20 bigri-prod         20 bigri-prod
+20 eas-dev            20 eas-dev
+20 eas-prod           20 eas-prod
+20 eat-poc            20 eat-poc
+20 fdw-dev            20 fdw-dev
+8 finapps-poc         8 finapps-poc
+20 iso-poc            20 iso-poc
+0 iso-prod            0 iso-prod
+19 ldc                19 ldc
+12 net-prod           12 net-prod
+20 ppers-orig         20 ppers-orig
+20 ppers-poc          20 ppers-poc
+19 ppersdev           19 ppersdev
+20 ppersprod          20 ppersprod
+20 seg-peoplesoftpoc  20 seg-peoplesoftpoc
+20 segConf            20 segConf
+12 segLog             12 segLog
+20 stm-dev            20 stm-dev
+20 syseng-poc         20 syseng-poc
+12 ucop-its           12 ucop-its
+20 ucop-itssandbox-eas20 ucop-itssandbox-eas
+20 ucop-setdev        20 ucop-setdev
+20 ucpath-build       20 ucpath-build
+20 ucpath-dr          20 ucpath-dr
+20 ucpath-pmo         20 ucpath-pmo
+20 ucpath-prod        20 ucpath-prod
+20 ucpathops-poc      20 ucpathops-poc
+20 was-build          20 was-build
+20 was-poc            20 was-poc
+
+12 Auth                 
+12 OrgMaster
+12 UCOP SharePoint
+2 ait-poc
+18 ait-training
+20 big-build
+20 big-data
+19 big-dev
+20 big-land
+20 big-prod
+19 big-test
+20 bigri-prod
+20 eas-dev
+20 eas-prod
+20 eat-poc
+20 fdw-dev
+8 finapps-poc
+20 iso-poc
+0 iso-prod
+19 ldc
+12 net-prod
+20 ppers-orig
+20 ppers-poc
+19 ppersdev
+20 ppersprod
+20 seg-peoplesoftpoc
+20 segConf
+12 segLog
+20 stm-dev
+20 syseng-poc
+12 ucop-its
+20 ucop-itssandbox-eas
+20 ucop-setdev
+20 ucpath-build
+20 ucpath-dr
+20 ucpath-pmo
+20 ucpath-prod
+20 ucpathops-poc
+20 was-build
+20 was-poc                
+
+
+stackset errors:
+
+ait-poc both regions insufficient permissions, 
+fdw-dev us-east-1, too many delilver channel
+iso-prod both region, can't assume role, too many delilver channel,

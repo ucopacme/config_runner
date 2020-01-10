@@ -2,7 +2,7 @@
 
 import io
 import sys
-import datetime
+from datetime import datetime
 
 import yaml
 import json
@@ -37,7 +37,7 @@ def truncate_sechub_rule_name(rule_name):
 
 def get_resource_count(item):
     if 'ComplianceContributorCount' in item['Compliance']:
-        return item['Compliance']['ComplianceContributorCount'].get('CappedCount', 0)
+        return int(item['Compliance']['ComplianceContributorCount'].get('CappedCount', 0))
     return None
 
 
@@ -46,7 +46,7 @@ def is_in_scope(spec, rule_name):
 
 
 def timestamp():
-    return datetime.datetime.utcnow().isoformat()
+    return datetime.utcnow().isoformat()
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
@@ -127,12 +127,13 @@ def main(master_role, aggregation_account, reporting_account, bucket_name, spec_
         rule_name = truncate_sechub_rule_name(item['ConfigRuleName'])
         if is_in_scope(spec, rule_name):
             compliance_data = dict(
-                ConfigRuleName=rule_name,
-                ComplianceType=item['Compliance']['ComplianceType'],
-                ComplianceContributorCount=get_resource_count(item),
-                AccountId=item['AccountId'],
-                AwsRegion=item['AwsRegion'],
-                AccountName=crawler.org.get_account_name_by_id(item['AccountId']),
+                config_rule_name=rule_name,
+                compliance_type=item['Compliance']['ComplianceType'],
+                non_compliant_resource_count=get_resource_count(item),
+                account_id=item['AccountId'],
+                account_name=crawler.org.get_account_name_by_id(item['AccountId']),
+                region=item['AwsRegion'],
+                timestamp=timestamp(),
             )
             text_stream.write(json.dumps(compliance_data) + '\n')
         #else:
@@ -140,8 +141,12 @@ def main(master_role, aggregation_account, reporting_account, bucket_name, spec_
     #print(text_stream.getvalue())
 
     # upload to s3
-    obj_path = 'aggregate_compliance_by_config_rules/{}/compliance_data.json'.format(timestamp()) 
-    #print(obj_path)
+    day = datetime.now().day
+    month = datetime.now().month
+    year = datetime.now().year
+    obj_path = 'aggregate_compliance_by_config_rules/{}/{}/{}/compliance_data.json'.format(year, month, day) 
+    print(obj_path)
+
     account = crawler.org.get_account(reporting_account)
     bucket_name = bucket_name + '-' + account.id
     print(bucket_name)
