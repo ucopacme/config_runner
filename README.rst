@@ -1,6 +1,17 @@
 config_runner
 =============
 
+
+running the load
+----------------
+
+::
+
+  cd config_runner
+  ./load_compliance_data.py -r awsauth/OrgAdmin -a iso-prod -b is3-compliance-data --reporting-account ait-poc
+
+
+
 Orgcrawler payload functions for managing AWS config service resources
 
 Things I want to be able to report
